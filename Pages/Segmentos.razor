@@ -1,0 +1,74 @@
+@page "/segmento"
+
+<PageTitle>Segmentos</PageTitle>
+
+@inject HttpClient httpClient
+
+<MudTable Items="@Elements.Take(15)" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <ToolBarContent>
+        <MudText Class="mt-2" Typo="Typo.h6">Periodic Elements</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Nome</MudTh>
+        <MudTh>Site</MudTh>
+        <MudTh>Segmento</MudTh>
+        <MudTh>Ações</MudTh>
+        @* <MudTh>Molar mass</MudTh> *@
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nome">@context.Nr</MudTd>
+            <MudTd DataLabel="Site">@context.Sign</MudTd>
+        <MudTd DataLabel="Segmento">@context.Name</MudTd>
+        <MudTd DataLabel="Ações">
+            <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" />
+            <MudIcon Icon="@Icons.Material.Outlined.Edit" />
+            <MudIcon Icon="@Icons.Material.Outlined.Delete" />
+        </MudTd>
+        @* <MudTd DataLabel="Molar mass">@context.Molar</MudTd> *@
+    </RowTemplate>
+</MudTable>
+
+<MudSwitch @bind-Checked="_hidePosition">Hide <b>position</b> when Breakpoint=Xs</MudSwitch>
+<MudSwitch @bind-Checked="_loading">Show Loading</MudSwitch>
+
+@code
+{
+    public string searchString = "";
+    private bool _hidePosition;
+    private bool _loading;
+    private List<Teste> Elements = new List<Teste>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Teste element = new Teste("1", "H", "Hydrogen", "0", "1,00794");
+        Elements.Add(element);
+        element = new Teste("2", "D", "ABCDEFF", "5", "321312");
+        Elements.Add(element);
+        element = new Teste("6", "P", "blablabla", "1", "43232794");
+        Elements.Add(element);
+        element = new Teste("3", "|", "ABCDEFF", "2", "432432194");
+        Elements.Add(element);
+        element = new Teste("4", "F", "AAAAA", "3", "42313214");
+        Elements.Add(element);
+    }
+
+    public class Teste
+    {
+        public string Nr {get; set;}
+        public string Sign {get; set;}
+        public string Name {get; set;}
+        public string Position {get; set;}
+        public string Molar {get; set;}
+
+        public Teste(string a, string b, string c, string d, string e)
+        {
+            this.Nr = a;
+            this.Sign = b;
+            this.Name = c;
+            this.Position = d;
+            this.Molar = e;
+        }
+    }
+}
