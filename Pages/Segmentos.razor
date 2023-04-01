@@ -2,73 +2,84 @@
 
 <PageTitle>Segmentos</PageTitle>
 
-@inject HttpClient httpClient
+@namespace MyApplication.Component
+@inject SegmentService SegmentService;
+@inject IDialogService DialogService;
 
-<MudTable Items="@Elements.Take(15)" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+<MudButton @onclick="OpenDialog">OpenDialog</MudButton>
+<MudTable Items="@segmentoList.Take(@index)" Dense="true" Hover="true" 
+                Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
     <ToolBarContent>
-        <MudText Class="mt-2" Typo="Typo.h6">Periodic Elements</MudText>
+        <MudText Class="mt-2" Typo="Typo.h6">Segmentos</MudText>
         <MudSpacer />
-        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.AddCircleOutline" Size="Size.Medium" Color="Color.Dark" aria-label="adicionar"></MudIconButton>
+        <MudTextField Class="mt-0" @bind-Value="searchString"
+                Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
+                        IconSize="Size.Medium" Placeholder="Procurar"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
         <MudTh>Nome</MudTh>
-        <MudTh>Site</MudTh>
-        <MudTh>Segmento</MudTh>
-        <MudTh>Ações</MudTh>
-        @* <MudTh>Molar mass</MudTh> *@
+        <MudTh>Descrição</MudTh>
+        <MudTh Style="text-align:end;">Ações</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Nome">@context.Nr</MudTd>
-            <MudTd DataLabel="Site">@context.Sign</MudTd>
-        <MudTd DataLabel="Segmento">@context.Name</MudTd>
+        <MudTd DataLabel="Nome">@context.Nome</MudTd>
+        <MudTd DataLabel="Site">@context.Descrio</MudTd>
         <MudTd DataLabel="Ações">
-            <MudIcon Icon="@Icons.Material.Filled.RemoveRedEye" />
-            <MudIcon Icon="@Icons.Material.Outlined.Edit" />
-            <MudIcon Icon="@Icons.Material.Outlined.Delete" />
+            <div class="d-flex flex-row-reverse">
+                <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Dark" aria-label="delete"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" aria-label="alterar"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Dark" aria-label="olho"></MudIconButton>
+            </div>
         </MudTd>
-        @* <MudTd DataLabel="Molar mass">@context.Molar</MudTd> *@
     </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 15, 25, 30, 50 }" @onchange="ChangeCollectionItens" @bind-value="index"
+                InfoFormat="@($"Itens {infoFormat}")" HorizontalAlignment="HorizontalAlignment.End"  RowsPerPageString="Itens por página:" 
+                        HidePageNumber="@hidePageNumber" HidePagination="@hidePagination" HideRowsPerPage="@hideRowsPerPage" />
+    </PagerContent>
 </MudTable>
-
-<MudSwitch @bind-Checked="_hidePosition">Hide <b>position</b> when Breakpoint=Xs</MudSwitch>
-<MudSwitch @bind-Checked="_loading">Show Loading</MudSwitch>
 
 @code
 {
     public string searchString = "";
-    private bool _hidePosition;
-    private bool _loading;
-    private List<Teste> Elements = new List<Teste>();
+    private bool _loading = true;
+    private bool hidePageNumber;
+    private bool hidePagination;
+    private bool hideRowsPerPage;
+    private int index = 10;
+    public Segment segment = new Segment();
+    public List<Datum> segmentoList= new List<Datum>();
+    private string infoFormat = "{first_item}-{last_item} de {all_items} itens";
+
+    public void ChangeCollectionItens()
+    {
+        this.index = 15;
+        StateHasChanged();
+    }
+
+    private void OpenDialog(string name, string description, bool actived)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Name", "Testezinho.");
+        parameters.Add("Description", "A descrição é vazia.");
+        parameters.Add("Actived", true);
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, DisableBackdropClick = true, CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<Viewitem>("Simple Dialog", parameters, options);
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        Teste element = new Teste("1", "H", "Hydrogen", "0", "1,00794");
-        Elements.Add(element);
-        element = new Teste("2", "D", "ABCDEFF", "5", "321312");
-        Elements.Add(element);
-        element = new Teste("6", "P", "blablabla", "1", "43232794");
-        Elements.Add(element);
-        element = new Teste("3", "|", "ABCDEFF", "2", "432432194");
-        Elements.Add(element);
-        element = new Teste("4", "F", "AAAAA", "3", "42313214");
-        Elements.Add(element);
-    }
+        //Open loading effect for users
+        _loading = true;
+        StateHasChanged();
 
-    public class Teste
-    {
-        public string Nr {get; set;}
-        public string Sign {get; set;}
-        public string Name {get; set;}
-        public string Position {get; set;}
-        public string Molar {get; set;}
+        segment = await SegmentService.RetornarRota();
+        segmentoList = segment.data;
 
-        public Teste(string a, string b, string c, string d, string e)
-        {
-            this.Nr = a;
-            this.Sign = b;
-            this.Name = c;
-            this.Position = d;
-            this.Molar = e;
-        }
+        //Close loading effect for users
+        _loading = false;
+        StateHasChanged();
     }
 }
