@@ -13,15 +13,20 @@
         <MudContainer>
             <MudPaper Elevation="0">
                 <MudText>Nome: *</MudText>
-                <MudTextField @bind-Value="ItemSegment.Nome" ReadOnly=@ReadOnly Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="DatumClients.Nome" ReadOnly=@ReadOnly Variant="Variant.Outlined"></MudTextField>
             </MudPaper>
             <MudPaper Class="mt-2" Elevation="0">
-                <MudText>Descrição:</MudText>
-                <MudTextField @bind-Value="ItemSegment.Descrição" ReadOnly=@ReadOnly Lines="6" Variant="Variant.Outlined"></MudTextField>
+                <MudText>Site: </MudText>
+                <MudTextField @bind-Value="DatumClients.Site" ReadOnly=@ReadOnly Variant="Variant.Outlined"></MudTextField>
+                <MudIconButton Href=@DatumClients.Site Target="_blank" Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Dark"></MudIconButton>
             </MudPaper>
-            <MudPaper Class="mt-3" Elevation="0">
-                <MudText>Campos obrigatórios.</MudText>
-                <MudSwitch Label="Ativo" ReadOnly=@ReadOnly Color="Color.Primary" @bind-Checked="@ItemSegment.Active"/>
+            <MudPaper Class="mt-2" Elevation="0">
+                <MudText>Segmento: </MudText>
+                <MudTextField @bind-Value="DatumClients.NameSegment" ReadOnly=@ReadOnly Variant="Variant.Outlined"></MudTextField>
+            </MudPaper>
+            <MudPaper Class="mt-2" Elevation="0">
+                <MudSwitch Label="Ativo" ReadOnly=@ReadOnly Color="Color.Primary" @bind-Checked="@DatumClients.Active"/>
+                <MudText>* Campos obrigatórios.</MudText>
             </MudPaper>
             <MudPaper Class="d-flex mt-2 mb-5" Elevation="0">
                 <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="Cancel">Voltar</MudButton>
@@ -36,15 +41,16 @@
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public DatumClients DatumClients { get; set; }
     [Parameter] public string idItem { get; set; }
     [Parameter] public bool ReadOnly { get; set; }
-    [Parameter] public ItemSegment ItemSegment { get; set; }
     private async void ChangeItem()
     {
-        //Means I can subscribe iTemSegment
+        //Means I can subscribe DatumClients
         if(ReadOnly == false)
         {
-            bool result = await segmentService.AttItem(idItem , ItemSegment);
+            bool result = false;
+            //bool result = await segmentService.AttItem(idItem , DatumClients);
             if(result)
             {
                 Cancel();

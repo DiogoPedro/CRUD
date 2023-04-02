@@ -1,4 +1,8 @@
 @page "/empresa"
+
+<PageTitle>Empresas / Cliente</PageTitle>
+
+@namespace MyApplication.Component
 @inject IDialogService dialogService;
 @inject ClientsService clientsService;
 @inject SegmentService segmentService;
@@ -32,7 +36,7 @@
                 <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" 
                                     aria-label="alterar"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Dark" 
-                                    aria-label="olho"></MudIconButton>
+                                    @onclick="@(() => ViewItemCall(@context))" aria-label="olho"></MudIconButton>
             </div>
         </MudTd>
     </RowTemplate>
@@ -80,14 +84,29 @@
         
     }
 
-    public void ViewItemCall()
+    public void ViewItemCall(DatumClients element)
     {
-        
+        string id = element._id.oid.ToString();
+        if(!String.IsNullOrEmpty(id))
+        {
+            OpenDialog(id, true, element);
+        }   
     }
 
     public void ChangeCollectionItens()
     {
 
+    }
+
+    private void OpenDialog(string idItem, bool readOnly, DatumClients datumClients)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("idItem", idItem);
+        parameters.Add("ReadOnly", readOnly);
+        parameters.Add("DatumClients", datumClients);
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, DisableBackdropClick = true, CloseOnEscapeKey = true };
+        var dialog = dialogService.Show<ViewClient>("Simple Dialog", parameters, options);
     }
 
     private async void ReloadItens()
