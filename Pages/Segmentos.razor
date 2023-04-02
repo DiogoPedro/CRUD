@@ -25,11 +25,12 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Nome">@context.Nome</MudTd>
-        <MudTd DataLabel="Site">@context.Descrio</MudTd>
+        <MudTd DataLabel="Site">@context.Descrição</MudTd>
         <MudTd DataLabel="Ações">
             <div class="d-flex flex-row-reverse">
                 <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Dark" aria-label="delete"></MudIconButton>
-                <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" aria-label="alterar"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" 
+                                    @onclick="@(() => ViewItemEdited(@context._id))" aria-label="alterar"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Dark" 
                                     @onclick="@(() => ViewItemCall(@context._id))" aria-label="olho"></MudIconButton>
             </div>
@@ -51,7 +52,6 @@
     private bool hideRowsPerPage;
     private int index = 10;
     public Segment segment = new Segment();
-    public ItemSegment itemSegment = new ItemSegment();
     public List<Datum> segmentoList= new List<Datum>();
     private string infoFormat = "{first_item}-{last_item} de {all_items} itens";
 
@@ -61,45 +61,49 @@
         StateHasChanged();
     }
 
-    public async void ViewItemCall(Id x)
+    public async void ViewItemCall(Id idItemSegment)
     {
-        string id = x.oid.ToString();
+        string id = idItemSegment.oid.ToString();
         if(!String.IsNullOrEmpty(id))
         {
             var result = await SegmentService.ReturnItem(id);
             if(result != null)
             {
-                string description = "";
-                if(result.Descrio != null)
-                {
-                    description = result.Descrio.ToString();
-                }
-                
-                OpenDialog(result.Nome, description, result.Active, true);
+                OpenDialog(id, true, result);
             }
         }
     }
 
-    private void OpenDialog(string name, string description, bool actived, bool readOnly)
+    public async void ViewItemEdited(Id idItemSegment)
     {
-        //string name, string description, bool actived, bool readOnly
-        @* var parameters = new DialogParameters();
-        parameters.Add("Name", "Testezinho.");
-        parameters.Add("Description", "A descrição é vazia.");
-        parameters.Add("Actived", true);
-        parameters.Add("ReadOnly", true); *@
+        string id = idItemSegment.oid.ToString();
+        if(!String.IsNullOrEmpty(id))
+        {
+            var result = await SegmentService.ReturnItem(id);
+            if(result != null)
+            {
+                OpenDialog(id, false, result);
+            }
+        }
+    }
 
+    private void OpenDialog(string idItem, bool readOnly, ItemSegment itemSegment)
+    {
         var parameters = new DialogParameters();
-        parameters.Add("Name", name);
-        parameters.Add("Description", description);
-        parameters.Add("Actived", actived);
+        parameters.Add("idItem", idItem);
         parameters.Add("ReadOnly", readOnly);
+        parameters.Add("ItemSegment", itemSegment);
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, DisableBackdropClick = true, CloseOnEscapeKey = true };
         var dialog = DialogService.Show<Viewitem>("Simple Dialog", parameters, options);
     }
 
     protected override async Task OnInitializedAsync()
+    {
+        ReloadItens();
+    }
+
+    private async void ReloadItens()
     {
         //Open loading effect for users
         _loading = true;

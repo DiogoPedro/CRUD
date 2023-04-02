@@ -2,6 +2,7 @@ using MyApplication.Services;
 using MyApplication.Model;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Text;
 
 public class SegmentService
 {
@@ -40,4 +41,21 @@ public class SegmentService
         }
         return null;
     }
+
+    public async Task<bool> AttItem(string id, ItemSegment itemSegment)
+    {
+        string link = $"{id}?apiKey={_SecretKey}"; 
+        var client = new HttpClient();  
+        var json = JsonConvert.SerializeObject(itemSegment);
+        var jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await client.PutAsync(_httpClient.BaseAddress + link, jsonContent);
+        if(response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            if(content != null)
+                return true;
+        }
+        return false;       
+    }
+
 }

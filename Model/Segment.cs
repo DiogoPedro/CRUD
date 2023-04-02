@@ -8,9 +8,9 @@ namespace MyApplication.Model
         public DateModified DateModified { get; set; }
         public bool Active { get; set; }
         public string CreatedByUser { get; set; }
-        public object ModifiedByUser { get; set; }
+        public string ModifiedByUser { get; set; }
         public string Nome { get; set; }
-        public object Descrio { get; set; }
+        public string Descrição { get; set; }
     }
 
     public class Segment

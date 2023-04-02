@@ -1,4 +1,7 @@
 @namespace MyApplication.Component
+@inject SegmentService segmentService;
+@inject NavigationManager Navigation;
+@using MyApplication.Model;
 
 <MudDialog>
     <TitleContent>
@@ -10,18 +13,22 @@
         <MudContainer>
             <MudPaper Elevation="0">
                 <MudText>Nome: *</MudText>
-                <MudTextField @bind-Value="Name" ReadOnly=@ReadOnly Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="ItemSegment.Nome" ReadOnly=@ReadOnly Variant="Variant.Outlined"></MudTextField>
             </MudPaper>
             <MudPaper Class="mt-2" Elevation="0">
                 <MudText>Descrição:</MudText>
-                <MudTextField @bind-Value="Description" ReadOnly=@ReadOnly Lines="3" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="ItemSegment.Descrição" ReadOnly=@ReadOnly Lines="3" Variant="Variant.Outlined"></MudTextField>
             </MudPaper>
             <MudPaper Class="mt-2" Elevation="0">
                 <MudText>Campos obrigatórios.</MudText>
-                <MudSwitch Label="Ativo" ReadOnly=@ReadOnly Color="Color.Primary" @bind-Checked="@Actived"/>
+                <MudSwitch Label="Ativo" ReadOnly=@ReadOnly Color="Color.Primary" @bind-Checked="@ItemSegment.Active"/>
             </MudPaper>
             <MudPaper Class="d-flex mt-2 mb-5" Elevation="0">
                 <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="Cancel">Voltar</MudButton>
+                @if(!ReadOnly)
+                {
+                    <MudButton Class="mx-4" Variant="Variant.Outlined" Color="Color.Primary" OnClick="ChangeItem">Salvar</MudButton>
+                }
             </MudPaper>
         </MudContainer>
     </DialogContent>
@@ -29,9 +36,21 @@
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string Name { get; set; }
-    [Parameter] public string Description { get; set; }
-    [Parameter] public bool Actived { get; set; }
+    [Parameter] public string idItem { get; set; }
     [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public ItemSegment ItemSegment { get; set; }
+    private async void ChangeItem()
+    {
+        //Means I can subscribe iTemSegment
+        if(ReadOnly == false)
+        {
+            bool result = await segmentService.AttItem(idItem , ItemSegment);
+            if(result)
+            {
+                Cancel();
+                Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+            }
+        }
+    }
     void Cancel() => MudDialog.Cancel();
 }
