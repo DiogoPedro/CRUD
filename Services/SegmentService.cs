@@ -38,8 +38,6 @@ public class SegmentService
             if(content != null)
                 return JsonConvert.DeserializeObject<ItemSegment>(content);
         }
-        ItemSegment dsa = new ItemSegment();
-        dsa.Nome = "";
         return null;
     }
 }
