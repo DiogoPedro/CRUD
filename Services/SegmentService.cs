@@ -58,4 +58,18 @@ public class SegmentService
         return false;       
     }
 
+    public async Task<bool> RemoveItem(string id)
+    { 
+        string link = $"{id}?apiKey={_SecretKey}"; 
+        var client = new HttpClient();  
+        var response = await client.DeleteAsync(_httpClient.BaseAddress + link);
+        if(response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            if(content != null)
+                return true;
+        }
+        return false;
+    }
+
 }

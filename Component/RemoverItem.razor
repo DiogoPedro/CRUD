@@ -1,0 +1,53 @@
+@namespace MyApplication.Component
+@inject SegmentService segmentService;
+@inject NavigationManager Navigation;
+@inject ISnackbar Snackbar;
+@using System.Threading.Tasks;
+
+<MudDialog>
+    <TitleContent>
+        <MudPaper Class="d-flex" Elevation="0">
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.DeleteOutline" Class="mr-1 mb-n1"></MudIcon>
+                       Tem certeza que deseja remover?
+                </MudText>
+        </MudPaper>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="mt-3 mb-3" Elevation="0">
+            <MudText>
+                Não será possivel reverter a operação!
+            </MudText>
+            <MudText Class="mt-2">
+                Não é possível excluir item com relacionementos.
+            </MudText>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudPaper Class="mx-auto mb-3 mr-1" Elevation="0">
+            <MudButton Class="mr-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ArrowBackIos" Color="Color.Tertiary" OnClick="Cancel">Voltar</MudButton>
+            <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="DeleteItem"> Remover item</MudButton>
+        </MudPaper>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string idItem { get; set; }
+    public async void DeleteItem()
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = "Defaults.Classes.Position.BottomStart";
+        var result = await segmentService.RemoveItem(idItem);
+        if(result)
+        {
+            Snackbar.Add("Item deletado.", Severity.Success);
+            await Task.Delay(500);
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+        else
+        {
+            Snackbar.Add("Não foi possivel deletar.", Severity.Error);
+        }
+    }
+    void Cancel() => MudDialog.Cancel();
+}

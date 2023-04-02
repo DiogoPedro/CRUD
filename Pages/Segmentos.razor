@@ -28,7 +28,8 @@
         <MudTd DataLabel="Site">@context.Descrição</MudTd>
         <MudTd DataLabel="Ações">
             <div class="d-flex flex-row-reverse">
-                <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Dark" aria-label="delete"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Delete" 
+                                    @onclick="@(() => ViewItemRemove(@context._id))" Color="Color.Dark" aria-label="delete"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" 
                                     @onclick="@(() => ViewItemEdited(@context._id))" aria-label="alterar"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Dark" 
@@ -87,6 +88,15 @@
         }
     }
 
+    public async void ViewItemRemove(Id idItemSegment)
+    {
+        string id = idItemSegment.oid.ToString();
+        if(!String.IsNullOrEmpty(id))
+        {
+            DeleteDialog(id);
+        }
+    }
+
     private void OpenDialog(string idItem, bool readOnly, ItemSegment itemSegment)
     {
         var parameters = new DialogParameters();
@@ -96,6 +106,15 @@
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, DisableBackdropClick = true, CloseOnEscapeKey = true };
         var dialog = DialogService.Show<Viewitem>("Simple Dialog", parameters, options);
+    }
+
+    private void DeleteDialog(string idItem)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("idItem", idItem);
+        var options = new DialogOptions { DisableBackdropClick = true, CloseOnEscapeKey = true };
+
+        DialogService.Show<RemoverItem>("Delete Dialog", parameters, options);
     }
 
     protected override async Task OnInitializedAsync()
