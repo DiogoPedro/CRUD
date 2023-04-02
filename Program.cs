@@ -11,7 +11,8 @@ builder.Services.AddScoped<SegmentService2>();
 builder.Services.AddScoped<SegmentService>();
 builder.Services.AddSingleton(new Configuration 
 { 
-    UrlBase = "https://nocodebackend-nocodebackend-stage.azurewebsites.net/api/v1/dataset/642745c1d90328e7c643cd66/611edbd7fd5915f2ae005dc2"
+    UrlBase = "https://nocodebackend-nocodebackend-stage.azurewebsites.net/api/v1/dataset/642745c1d90328e7c643cd66/611edbd7fd5915f2ae005dc2/",
+    _SecretKey = "6425f48dd90328e7c643c5a0"
 });
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });

@@ -10,15 +10,15 @@
         <MudContainer>
             <MudPaper Elevation="0">
                 <MudText>Nome: *</MudText>
-                <MudTextField @bind-Value="Name" ReadOnly="true" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="Name" ReadOnly=@ReadOnly Variant="Variant.Outlined"></MudTextField>
             </MudPaper>
             <MudPaper Class="mt-2" Elevation="0">
                 <MudText>Descrição:</MudText>
-                <MudTextField @bind-Value="Description" ReadOnly="true" Lines="3" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="Description" ReadOnly=@ReadOnly Lines="3" Variant="Variant.Outlined"></MudTextField>
             </MudPaper>
             <MudPaper Class="mt-2" Elevation="0">
                 <MudText>Campos obrigatórios.</MudText>
-                <MudSwitch Label="Ativo" Color="Color.Primary" @bind-Checked="@Actived"/>
+                <MudSwitch Label="Ativo" ReadOnly=@ReadOnly Color="Color.Primary" @bind-Checked="@Actived"/>
             </MudPaper>
             <MudPaper Class="d-flex mt-2 mb-5" Elevation="0">
                 <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="Cancel">Voltar</MudButton>
@@ -32,6 +32,6 @@
     [Parameter] public string Name { get; set; }
     [Parameter] public string Description { get; set; }
     [Parameter] public bool Actived { get; set; }
-
+    [Parameter] public bool ReadOnly { get; set; }
     void Cancel() => MudDialog.Cancel();
 }

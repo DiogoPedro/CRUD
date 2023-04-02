@@ -1,8 +1,36 @@
 @page "/empresa"
 
-<PageTitle>Empresas e Clientes</PageTitle>
+@* <PageTitle>Empresas e Clientes</PageTitle>
+@inject SegmentService SegmentService
+
+<p>Oi</p>
+@if(rodolfo != null)
+{
+    <p>@rodolfo.total</p>
+}
 
 @code
 {
-    
+    public Segment rodolfo = new Segment();
+    protected override async Task OnInitializedAsync()
+    {
+        //rodolfo = await MeuServico.Main();
+        //rodolfo = await MeuServico.RetornarRota();
+        rodolfo = await SegmentService.RetornarRota();
+    }
+} *@
+
+@inject IDialogService DialogService
+
+
+<MudButton @onclick="OpenDialog" Variant="Variant.Filled" Color="Color.Primary">
+    Open Simple Dialog
+</MudButton>
+@code {
+
+    private void OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        DialogService.Show<MudDialog>("Simple Dialog", options);
+    }
 }

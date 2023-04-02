@@ -5,8 +5,9 @@
 @namespace MyApplication.Component
 @inject SegmentService SegmentService;
 @inject IDialogService DialogService;
+@using MyApplication.Model;
 
-<MudButton @onclick="OpenDialog">OpenDialog</MudButton>
+@* <MudButton @onclick="OpenDialog">OpenDialog</MudButton> *@
 <MudTable Items="@segmentoList.Take(@index)" Dense="true" Hover="true" 
                 Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
     <ToolBarContent>
@@ -29,7 +30,8 @@
             <div class="d-flex flex-row-reverse">
                 <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Dark" aria-label="delete"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" aria-label="alterar"></MudIconButton>
-                <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Dark" aria-label="olho"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Dark" 
+                                    @onclick="@(() => ViewItemCall(@context._id))" aria-label="olho"></MudIconButton>
             </div>
         </MudTd>
     </RowTemplate>
@@ -49,6 +51,7 @@
     private bool hideRowsPerPage;
     private int index = 10;
     public Segment segment = new Segment();
+    public ItemSegment itemSegment = new ItemSegment();
     public List<Datum> segmentoList= new List<Datum>();
     private string infoFormat = "{first_item}-{last_item} de {all_items} itens";
 
@@ -58,12 +61,39 @@
         StateHasChanged();
     }
 
-    private void OpenDialog(string name, string description, bool actived)
+    public async void ViewItemCall(Id x)
     {
-        var parameters = new DialogParameters();
+        string id = x.oid.ToString();
+        if(!String.IsNullOrEmpty(id))
+        {
+            var result = await SegmentService.ReturnItem(id);
+            if(result != null)
+            {
+                string description = "";
+                if(result.Descrio != null)
+                {
+                    description = result.Descrio.ToString();
+                }
+                
+                OpenDialog(result.Nome, description, result.Active, true);
+            }
+        }
+    }
+
+    private void OpenDialog(string name, string description, bool actived, bool readOnly)
+    {
+        //string name, string description, bool actived, bool readOnly
+        @* var parameters = new DialogParameters();
         parameters.Add("Name", "Testezinho.");
         parameters.Add("Description", "A descrição é vazia.");
         parameters.Add("Actived", true);
+        parameters.Add("ReadOnly", true); *@
+
+        var parameters = new DialogParameters();
+        parameters.Add("Name", name);
+        parameters.Add("Description", description);
+        parameters.Add("Actived", actived);
+        parameters.Add("ReadOnly", readOnly);
 
         var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, DisableBackdropClick = true, CloseOnEscapeKey = true };
         var dialog = DialogService.Show<Viewitem>("Simple Dialog", parameters, options);
