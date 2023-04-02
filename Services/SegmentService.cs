@@ -72,4 +72,20 @@ public class SegmentService
         return false;
     }
 
+    public async Task<string> CreateItem(NewSegment newSegment)
+    { 
+        string obj = JsonConvert.SerializeObject(newSegment);
+        var content = new StringContent(obj, Encoding.UTF8, "application/json");
+        
+        var client = new HttpClient();
+        var response = await client.PostAsync(_httpClient.BaseAddress + "?apiKey=" + _SecretKey, content); 
+        //var response = await client.PostAsync("?apiKey=" + _SecretKey, content);
+        if(response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadAsStringAsync();
+            if(result != null)
+                return result;
+        }
+        return "";
+    }
 }

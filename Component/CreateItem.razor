@@ -1,0 +1,64 @@
+@namespace MyApplication.Component
+@inject SegmentService segmentService;
+@inject NavigationManager Navigation;
+@inject ISnackbar Snackbar;
+@using MyApplication.Model;
+
+<MudDialog>
+    <TitleContent>
+        <MudText Class="mt-5 ms-5" Typo="Typo.h5">
+            Cadastrar
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudContainer>
+            <MudPaper Elevation="0">
+                <MudText>Nome: *</MudText>
+                <MudTextField @bind-Value="Name" Variant="Variant.Outlined"></MudTextField>
+            </MudPaper>
+            <MudPaper Class="mt-2" Elevation="0">
+                <MudText>Descrição:</MudText>
+                <MudTextField @bind-Value="Description" Lines="3" Variant="Variant.Outlined"></MudTextField>
+            </MudPaper>
+            <MudPaper Class="mt-2" Elevation="0">
+                <MudText>Campos obrigatórios.</MudText>
+            </MudPaper>
+            <MudPaper Class="d-flex mt-2" Elevation="0">
+                <MudPaper Class="mx-auto mb-3 mr-1" Elevation="0">
+                    <MudButton Class="mr-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ArrowBackIos" OnClick="Cancel">Cancelar</MudButton>
+                    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="CreateElement"> Cadastrar</MudButton>
+                </MudPaper>
+            </MudPaper>
+        </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    public string Name = "";
+    public string Description = "";
+    [Parameter] public string CreatedUser { get; set; }
+    private async void CreateElement()
+    {
+        if(!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(CreatedUser))
+        {
+            NewSegment newSegment = new NewSegment(Name, Description, CreatedUser);
+            string result = await segmentService.CreateItem(newSegment);
+            if(result != null)
+            {
+                Snackbar.Add("Item criado com sucesso.", Severity.Success);
+                await Task.Delay(500);
+                Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+            }
+            else
+            {
+                Snackbar.Add("Não foi possivel criar.", Severity.Error);
+            }
+        }
+        else
+        {
+            Snackbar.Add("Não foi possivel criar. O Nome não pode ser vázio.", Severity.Error);
+        }
+    }
+    void Cancel() => MudDialog.Cancel();
+}

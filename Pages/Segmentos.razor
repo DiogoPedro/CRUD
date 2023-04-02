@@ -13,7 +13,8 @@
     <ToolBarContent>
         <MudText Class="mt-2" Typo="Typo.h6">Segmentos</MudText>
         <MudSpacer />
-        <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.AddCircleOutline" Size="Size.Medium" Color="Color.Dark" aria-label="adicionar"></MudIconButton>
+        <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.AddCircleOutline" aria-label="adicionar"
+                                OnClick="ViewItemCreate" Size="Size.Medium" Color="Color.Dark"></MudIconButton>
         <MudTextField Class="mt-0" @bind-Value="searchString"
                 Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
                         IconSize="Size.Medium" Placeholder="Procurar"></MudTextField>
@@ -95,6 +96,16 @@
         {
             DeleteDialog(id);
         }
+    }
+
+    public async void ViewItemCreate()
+    {
+        string createdUser = "dpfs@cin.ufpe.br";
+        var parameters = new DialogParameters();
+        parameters.Add("CreatedUser", createdUser);
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, DisableBackdropClick = true, CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<CreateItem>("Simple Dialog", parameters, options);
     }
 
     private void OpenDialog(string idItem, bool readOnly, ItemSegment itemSegment)
