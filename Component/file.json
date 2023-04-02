@@ -1,0 +1,29 @@
+'{
+    "_id": {
+        "$oid": "611eda63fd5915f2ae005dc0"
+    },
+    "Nome": "VTB Solutions XZC",
+    "Site": "https://vtb.solutions",
+    "Segmento": {
+        "$oid": "611edd74fd5915f2ae005ddf"
+    },
+    "ListAttClient": [ //Ainda preciso subsitituir
+        {
+            "_id": {
+                "$oid": "611eda63fd5915f2ae005dc0" //identificar.
+            },
+            "DateCreated": {
+                "$date": "2021-08-19T22:25:39.378Z"
+            },
+            "DateModified": {
+                "$date": "2021-08-19T22:39:40.081Z"
+            },
+            "Active": true,
+            "CreatedByUser": "admin-vtbstudio@vtb.solutions",
+            "ModifiedByUser": null,
+            "Nome": "Tecnologia",
+            "Descrição": null
+        }
+    ],
+    "Active": true
+}'

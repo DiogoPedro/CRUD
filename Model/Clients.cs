@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 namespace MyApplication.Model
 {
-// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class DatumClients
     {
         public Id _id { get; set; }

@@ -1,5 +1,5 @@
 @namespace MyApplication.Component
-@inject SegmentService segmentService;
+@inject ClientsService clientsService; 
 @inject NavigationManager Navigation;
 @using MyApplication.Model;
 
@@ -42,15 +42,18 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public DatumClients DatumClients { get; set; }
-    [Parameter] public string idItem { get; set; }
+    [Parameter] public Id idItem { get; set; }
     [Parameter] public bool ReadOnly { get; set; }
     private async void ChangeItem()
     {
         //Means I can subscribe DatumClients
         if(ReadOnly == false)
         {
-            bool result = false;
-            //bool result = await segmentService.AttItem(idItem , DatumClients);
+            ListAttClient attClient = new ListAttClient(DatumClients._id, DatumClients.DateCreated, DatumClients.DateModified, DatumClients.Active, DatumClients.CreatedByUser, null, DatumClients.NameSegment, null);
+            List<ListAttClient> client = new List<ListAttClient>();
+            client.Add(attClient);
+            PutClient putClient = new PutClient(idItem, DatumClients.Nome, DatumClients.Site, DatumClients.Segmento, client, DatumClients.Active);
+            bool result = await clientsService.AttItem(DatumClients._id.oid.ToString(), putClient);
             if(result)
             {
                 Cancel();

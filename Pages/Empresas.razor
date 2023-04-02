@@ -34,7 +34,7 @@
                 <MudIconButton Icon="@Icons.Material.Outlined.Delete" 
                                     Color="Color.Dark" aria-label="delete"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" 
-                                    aria-label="alterar"></MudIconButton>
+                                    @onclick="@(() => ViewItemEdited(@context))" aria-label="alterar"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Dark" 
                                     @onclick="@(() => ViewItemCall(@context))" aria-label="olho"></MudIconButton>
             </div>
@@ -79,9 +79,13 @@
         
     }
 
-    public void ViewItemEdited()
+    public void ViewItemEdited(DatumClients element)
     {
-        
+        string id = element._id.oid.ToString();
+        if(!String.IsNullOrEmpty(id))
+        {
+            OpenDialog(element._id, false, element);
+        }          
     }
 
     public void ViewItemCall(DatumClients element)
@@ -89,7 +93,7 @@
         string id = element._id.oid.ToString();
         if(!String.IsNullOrEmpty(id))
         {
-            OpenDialog(id, true, element);
+            OpenDialog(element._id, true, element);
         }   
     }
 
@@ -98,7 +102,7 @@
 
     }
 
-    private void OpenDialog(string idItem, bool readOnly, DatumClients datumClients)
+    private void OpenDialog(Id idItem, bool readOnly, DatumClients datumClients)
     {
         var parameters = new DialogParameters();
         parameters.Add("idItem", idItem);
