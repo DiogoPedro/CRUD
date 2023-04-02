@@ -48,14 +48,14 @@
 @code
 {
     public string searchString = "";
-    private bool _loading = true;
-    private bool hidePageNumber;
-    private bool hidePagination;
-    private bool hideRowsPerPage;
-    private int index = 10;
+    public bool _loading = true;
+    public bool hidePageNumber;
+    public bool hidePagination;
+    public bool hideRowsPerPage;
+    public int index = 10;
     public Segment segment = new Segment();
     public List<Datum> segmentoList= new List<Datum>();
-    private string infoFormat = "{first_item}-{last_item} de {all_items} itens";
+    public string infoFormat = "{first_item}-{last_item} de {all_items} itens";
 
     public void ChangeCollectionItens()
     {

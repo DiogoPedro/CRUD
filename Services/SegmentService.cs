@@ -8,9 +8,11 @@ public class SegmentService
 {
     private HttpClient _httpClient;
     private string _SecretKey;
+    private string _Route;
     public SegmentService(HttpClient httpClient, Configuration configuracao)
     {
         _SecretKey = configuracao._SecretKey;
+        _Route = configuracao.RouteSegments;
         httpClient.BaseAddress = new Uri(configuracao.UrlBase);
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _SecretKey);
         _httpClient = httpClient;
@@ -18,7 +20,8 @@ public class SegmentService
 
     public async Task<Segment> RetornarRota()
     {
-        var response = await this._httpClient.GetAsync("?apiKey=" + _SecretKey);
+        var client = new HttpClient();  
+        var response = await client.GetAsync(_httpClient.BaseAddress + _Route + "?apiKey=" + _SecretKey);
         if(response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -32,7 +35,7 @@ public class SegmentService
     { 
         string link = $"{id}?apiKey={_SecretKey}"; 
         var client = new HttpClient();  
-        var response = await client.GetAsync(_httpClient.BaseAddress + link);
+        var response = await client.GetAsync(_httpClient.BaseAddress + _Route + link);
         if(response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -48,7 +51,7 @@ public class SegmentService
         var client = new HttpClient();  
         var json = JsonConvert.SerializeObject(itemSegment);
         var jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await client.PutAsync(_httpClient.BaseAddress + link, jsonContent);
+        var response = await client.PutAsync(_httpClient.BaseAddress + _Route + link, jsonContent);
         if(response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -62,7 +65,7 @@ public class SegmentService
     { 
         string link = $"{id}?apiKey={_SecretKey}"; 
         var client = new HttpClient();  
-        var response = await client.DeleteAsync(_httpClient.BaseAddress + link);
+        var response = await client.DeleteAsync(_httpClient.BaseAddress + _Route + link);
         if(response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -78,13 +81,27 @@ public class SegmentService
         var content = new StringContent(obj, Encoding.UTF8, "application/json");
         
         var client = new HttpClient();
-        var response = await client.PostAsync(_httpClient.BaseAddress + "?apiKey=" + _SecretKey, content); 
+        var response = await client.PostAsync(_httpClient.BaseAddress + _Route + "?apiKey=" + _SecretKey, content); 
         //var response = await client.PostAsync("?apiKey=" + _SecretKey, content);
         if(response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadAsStringAsync();
             if(result != null)
                 return result;
+        }
+        return "";
+    }
+
+    public async Task<string> ReturnNameSegment(string id)
+    { 
+        string link = $"{id}?apiKey={_SecretKey}"; 
+        var client = new HttpClient();  
+        var response = await client.GetAsync(_httpClient.BaseAddress + _Route + link);
+        if(response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            if(content != null)
+                return JsonConvert.DeserializeObject<ItemSegment>(content).Nome;
         }
         return "";
     }

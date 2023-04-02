@@ -1,20 +1,116 @@
 @page "/empresa"
-@* <PageTitle>Empresas e Clientes</PageTitle>
-@inject SegmentService SegmentService
+@inject IDialogService dialogService;
+@inject ClientsService clientsService;
+@inject SegmentService segmentService;
+@using MyApplication.Model;
 
-<p>Oi</p>
-@if(rodolfo != null)
-{
-    <p>@rodolfo.total</p>
-}
+<MudTable Items="@datumClients.Take(@index)" Dense="true" Hover="true" 
+                Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <ToolBarContent>
+        <MudText Class="mt-2" Typo="Typo.h6">Segmentos</MudText>
+        <MudSpacer />
+        <MudIconButton Class="mt-4" Icon="@Icons.Material.Filled.AddCircleOutline" aria-label="adicionar"
+                                OnClick="ViewItemCreate" Size="Size.Medium" Color="Color.Dark"></MudIconButton>
+        <MudTextField Class="mt-0" @bind-Value="searchString"
+                Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
+                        IconSize="Size.Medium" Placeholder="Procurar"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Nome</MudTh>
+        <MudTh>Site</MudTh>
+        <MudTh>Segmento</MudTh>
+        <MudTh Style="text-align:end;">Ações</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nome">@context.Nome</MudTd>
+        <MudTd DataLabel="Site">@context.Site</MudTd>
+        <MudTd DataLabel="Segmento">@context.NameSegment</MudTd>
+        <MudTd DataLabel="Ações">
+            <div class="d-flex flex-row-reverse">
+                <MudIconButton Icon="@Icons.Material.Outlined.Delete" 
+                                    Color="Color.Dark" aria-label="delete"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" 
+                                    aria-label="alterar"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Dark" 
+                                    aria-label="olho"></MudIconButton>
+            </div>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 15, 25, 30, 50 }" @onchange="ChangeCollectionItens" @bind-value="index"
+                InfoFormat="@($"Itens {infoFormat}")" HorizontalAlignment="HorizontalAlignment.End"  RowsPerPageString="Itens por página:" 
+                        HidePageNumber="@hidePageNumber" HidePagination="@hidePagination" HideRowsPerPage="@hideRowsPerPage" />
+    </PagerContent>
+</MudTable>
 
 @code
 {
-    public Segment rodolfo = new Segment();
+    public string searchString = "";
+    private bool _loading = true;
+    private bool hidePageNumber;
+    private bool hidePagination;
+    private bool hideRowsPerPage;
+    private int index = 10; 
+    public Clients clients = new Clients();
+    public List<DatumClients> datumClients = new List<DatumClients>();
+    private string infoFormat = "{first_item}-{last_item} de {all_items} itens";
+    
+    public async Task<string> WaitName(string id)
+    {
+        return await segmentService.ReturnNameSegment(id);
+    }
+    
     protected override async Task OnInitializedAsync()
     {
-        //rodolfo = await MeuServico.Main();
-        //rodolfo = await MeuServico.RetornarRota();
-        rodolfo = await SegmentService.RetornarRota();
+        ReloadItens();
     }
-} *@
+
+    public void ViewItemCreate()
+    {
+
+    }
+
+    public void ViewItemRemove()
+    {
+        
+    }
+
+    public void ViewItemEdited()
+    {
+        
+    }
+
+    public void ViewItemCall()
+    {
+        
+    }
+
+    public void ChangeCollectionItens()
+    {
+
+    }
+
+    private async void ReloadItens()
+    {
+        //Open loading effect for users
+        _loading = true;
+        StateHasChanged();
+
+        clients = await clientsService.ReturnRoute();
+        var copy = new List<DatumClients>(); 
+        datumClients = clients.data;
+        @foreach (var item in datumClients)
+        {
+            if(item.Segmento != null)
+            {
+                item.NameSegment = await segmentService.ReturnNameSegment(item.Segmento.oid.ToString());
+            }
+            copy.Add(item);
+        }
+        datumClients = copy;
+
+        //Close loading effect for users
+        _loading = false;
+        StateHasChanged();
+    }
+}
